@@ -1,0 +1,12 @@
+pids
+logs
+node_modules
+npm-debug.log*
+coverage/
+run
+dist
+public
+lib
+.cache
+.DS_Store
+.idea/
