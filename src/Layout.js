@@ -126,8 +126,11 @@ class ReactCoolLayout extends Component {
   }
 
   render() {
+    const style = Object.assign({}, this.props.style, {
+      position: 'relative'
+    });
     return (<div
-      style={{ position: 'relative' }}
+      style={style}
       ref={(dom) => { this.dom = dom; }}
     >
       {this.props.children}

@@ -12,11 +12,13 @@ const node = <Layout>
         const width = lib.page().width - lib.get('1').width - lib.get('2').width - 200;
         return parseInt(width / 2);
       }}
+      style={{
+        background: 'red',
+      }}
     >
       <div style={{
         width: 200,
         height: 200,
-        background: 'red'
       }} />
         
     </Layout.Item>
