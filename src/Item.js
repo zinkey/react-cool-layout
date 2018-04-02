@@ -9,10 +9,11 @@ class ReactCoolLayoutItem extends Component {
   }
 
   render() {
+    const style = Object.assign({}, this.props.style, {
+      position: 'absolute',
+    });
     return (<div
-      style={{
-        position: 'absolute',
-      }}
+      style={style}
       ref={(dom) => { this.dom = dom; }}
       id={this.props.id}
     >
