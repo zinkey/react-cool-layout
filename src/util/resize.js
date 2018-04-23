@@ -17,10 +17,6 @@ const runCallbacks = () => {
   running = false;
 };
 
-// export default (cb) => {
-//   window.addEventListener('resize', cb);
-// };
-
 export default (cb) => {
   if (callbacks.length === 0) {
     window.addEventListener('resize', resize);
