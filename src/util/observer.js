@@ -1,4 +1,5 @@
 import ResizeObserver from 'resize-observer-polyfill';
+import 'mutationobserver-shim';
 
 const get = (dom) => {
   const obj = getComputedStyle(dom);
