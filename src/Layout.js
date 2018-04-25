@@ -61,7 +61,7 @@ class ReactCoolLayout extends Component {
                 return {
                   viewWidth: document.documentElement.clientWidth,
                   viewHeight: document.documentElement.clientHeight,
-                  width: document.documentElement.scrollWidth,
+                  width: document.documentElement.offsetWidth,
                   height: document.documentElement.scrollHeight,
                 };
               },
@@ -87,7 +87,7 @@ class ReactCoolLayout extends Component {
               return {
                 viewWidth: document.documentElement.clientWidth,
                 viewHeight: document.documentElement.clientHeight,
-                width: document.documentElement.scrollWidth,
+                width: document.documentElement.offsetWidth,
                 height: document.documentElement.scrollHeight,
               };
             },
@@ -112,7 +112,7 @@ class ReactCoolLayout extends Component {
                   return {
                     viewWidth: document.documentElement.clientWidth,
                     viewHeight: document.documentElement.clientHeight,
-                    width: document.documentElement.scrollWidth,
+                    width: document.documentElement.offsetWidth,
                     height: document.documentElement.scrollHeight,
                   };
                 },
