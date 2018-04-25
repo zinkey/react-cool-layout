@@ -71,6 +71,8 @@ class ReactCoolLayout extends Component {
           } else {
             key.dom.style[type] = `${parseFloat(key.props[type])}px`;
           }
+
+          this.props.onChange();
         }
       });
     });
@@ -93,6 +95,7 @@ class ReactCoolLayout extends Component {
             },
           });
           key.dom.style[type] = `${val}px`;
+          this.props.onChange();
         });
       }
 
@@ -118,6 +121,7 @@ class ReactCoolLayout extends Component {
                 },
               });
               item.dom.style[type] = `${value}px`;
+              this.props.onChange();
             }
           });
         });
@@ -136,6 +140,15 @@ class ReactCoolLayout extends Component {
       {this.props.children}
     </div>);
   }
+}
+
+ReactCoolLayout.propTypes = {
+  // callback function that will be invoked when layout changes
+  onChange: PropTypes.func,
+};
+
+ReactCoolLayout.defaultProps = {
+  onChange: () => {},
 }
 
 ReactCoolLayout.childContextTypes = {
