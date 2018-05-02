@@ -4,6 +4,14 @@ import Map from './util/map';
 import observer from './util/observer';
 import resize from './util/resize';
 
+const setStyle = (dom, type, val) => {
+  const px = `${val}px`;
+  if (dom.style[`__${type}`] === px) {
+    return;
+  }
+  dom.style[`__${type}`] = px;
+  dom.style[type] = px;
+};
 
 class ReactCoolLayout extends Component {
 
@@ -67,11 +75,10 @@ class ReactCoolLayout extends Component {
               },
             });
             value.listen[type] = key.props[type];
-            key.dom.style[type] = `${val}px`;
+            setStyle(key.dom, type, val);
           } else {
-            key.dom.style[type] = `${parseFloat(key.props[type])}px`;
+            setStyle(key.dom, type, parseFloat(key.props[type]));
           }
-
           this.props.onChange();
         }
       });
@@ -94,7 +101,7 @@ class ReactCoolLayout extends Component {
               };
             },
           });
-          key.dom.style[type] = `${val}px`;
+          setStyle(key.dom, type, val);
           this.props.onChange();
         });
       }
@@ -120,7 +127,7 @@ class ReactCoolLayout extends Component {
                   };
                 },
               });
-              item.dom.style[type] = `${value}px`;
+              setStyle(item.dom, type, value);
               this.props.onChange();
             }
           });
@@ -148,7 +155,7 @@ ReactCoolLayout.propTypes = {
 };
 
 ReactCoolLayout.defaultProps = {
-  onChange: () => {},
+  onChange: () => { },
 }
 
 ReactCoolLayout.childContextTypes = {
