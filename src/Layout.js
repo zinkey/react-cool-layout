@@ -46,6 +46,9 @@ class ReactCoolLayout extends Component {
 
   componentDidMount() {
     this.map.list.forEach(({ key, value }) => {
+      if (!key.dom) {
+        return;
+      }
       ['width', 'height', 'left', 'top'].forEach((type) => {
         if (typeof key.props[type] !== 'undefined') {
           if (typeof key.props[type] === 'function') {
@@ -85,6 +88,9 @@ class ReactCoolLayout extends Component {
     });
 
     this.map.list.forEach(({ key, value }) => {
+      if (!key.dom) {
+        return;
+      }
       for (const type in value.listenPage) {
         resize(() => {
           const val = value.listenPage[type]({
@@ -111,6 +117,9 @@ class ReactCoolLayout extends Component {
         observer(key.dom, (obj) => {
           value.cache = obj;
           value.effectComponent.forEach((item) => {
+            if (!item.dom) {
+              return;
+            }
             const listen = this.map.get(item).listen;
             for (const type in listen) {
               const value = listen[type]({
