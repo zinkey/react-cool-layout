@@ -24,6 +24,7 @@ class ReactCoolLayout extends Component {
     return {
       env: {
         init: this.init.bind(this),
+        dispose: this.dispose.bind(this),
       },
     };
   }
@@ -41,7 +42,17 @@ class ReactCoolLayout extends Component {
         left: 0,
         top: 0,
       },
+      dispose: [],
     });
+  }
+
+  dispose(instance) {
+    const value = this.map.get(instance);
+    if (!value) {
+      return;
+    }
+    value.dispose.forEach(dispose => dispose());
+    this.map.delete(instance);
   }
 
   componentDidMount() {
@@ -53,7 +64,7 @@ class ReactCoolLayout extends Component {
             const val = key.props[type]({
               get: (targetId) => {
                 const target = this.map.list.find(item => item.key.props.id === targetId);
-                if (target.value.effectComponent.indexOf(key) < 0) {
+                if (target && target.value.effectComponent.indexOf(key) < 0) {
                   target.value.effectComponent.push(key);
                 }
                 return {
@@ -87,10 +98,18 @@ class ReactCoolLayout extends Component {
 
     this.map.list.forEach(({ key, value }) => {
       for (const type in value.listenPage) {
-        resize(() => {
+        value.dispose.push(resize(() => {
           const val = value.listenPage[type]({
             get: (targetId) => {
               const target = this.map.list.find(item => item.key.props.id === targetId);
+              if (!target) {
+                return {
+                  width: 0,
+                  height: 0,
+                  left: 0,
+                  top: 0,
+                };
+              }
               return target.value.cache;
             },
             page: () => {
@@ -104,12 +123,12 @@ class ReactCoolLayout extends Component {
           });
           setStyle(key.dom, type, val);
           this.props.onChange();
-        });
+        }));
       }
 
 
       if (value.effectComponent.length > 0) {
-        observer(key.dom, (obj) => {
+        value.dispose.push(observer(key.dom, (obj) => {
           value.cache = obj;
           value.effectComponent.forEach((item) => {
             const listen = this.map.get(item).listen;
@@ -117,6 +136,14 @@ class ReactCoolLayout extends Component {
               const value = listen[type]({
                 get: (targetId) => {
                   const target = this.map.list.find(item => item.key.props.id === targetId);
+                  if (!target) {
+                    return {
+                      width: 0,
+                      height: 0,
+                      left: 0,
+                      top: 0,
+                    };
+                  }
                   return target.value.cache;
                 },
                 page: () => {
@@ -132,7 +159,7 @@ class ReactCoolLayout extends Component {
               this.props.onChange();
             }
           });
-        });
+        }));
       }
     });
   }
