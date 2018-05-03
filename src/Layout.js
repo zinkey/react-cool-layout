@@ -57,6 +57,7 @@ class ReactCoolLayout extends Component {
 
   componentDidMount() {
     this.map.list.forEach(({ key, value }) => {
+      const { defaultLeft, defaultTop, defaultWidth, defaultHeight } = key.props;
       ['width', 'height', 'left', 'top'].forEach((type) => {
         if (typeof key.props[type] !== 'undefined') {
           if (typeof key.props[type] === 'function') {
@@ -67,10 +68,10 @@ class ReactCoolLayout extends Component {
                   target.value.effectComponent.push(key);
                 }
                 return {
-                  width: 0,
-                  height: 0,
-                  left: 0,
-                  top: 0,
+                  width: defaultWidth || 0,
+                  height: defaultHeight || 0,
+                  left: defaultLeft || 0,
+                  top: defaultTop || 0,
                 };
               },
               page: () => {
