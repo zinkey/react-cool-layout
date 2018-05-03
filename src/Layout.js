@@ -44,6 +44,13 @@ class ReactCoolLayout extends Component {
     });
   }
 
+  dispose(instance) {
+    if (instance.dom.__disconnect) {
+      instance.dom.__disconnect();
+    }
+    this.map.delete(instance);
+  }
+
   componentDidMount() {
     this.map.list.forEach(({ key, value }) => {
       ['width', 'height', 'left', 'top'].forEach((type) => {

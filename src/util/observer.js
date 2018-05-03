@@ -4,18 +4,22 @@ import 'mutationobserver-shim';
 const get = (dom) => {
   const obj = getComputedStyle(dom);
   return {
-    width: parseFloat(obj.width),
-    height: parseFloat(obj.height),
-    left: parseFloat(obj.left),
-    top: parseFloat(obj.top),
+    width: parseFloat(obj.width) || 0,
+    height: parseFloat(obj.height) || 0,
+    left: parseFloat(obj.left) || 0,
+    top: parseFloat(obj.top) || 0,
   };
 };
 
 const observer = (dom, cb) => {
-  new ResizeObserver(() => cb(get(dom))).observe(dom);
-  const observer = new MutationObserver(() => cb(get(dom)));
-  const config = { attributes: true, childList: false, characterData: false };
-  observer.observe(dom, config);
+  const resizeObserver = new ResizeObserver(() => cb(get(dom)));
+  resizeObserver.observe(dom);
+  const mutationObserver = new MutationObserver(() => cb(get(dom)));
+  mutationObserver.observe(dom, { attributes: true, childList: false, characterData: false });
+  dom.__disconnect = () => {
+    resizeObserver.disconnect();
+    mutationObserver.disconnect();
+  };
 };
 
 export default observer;
