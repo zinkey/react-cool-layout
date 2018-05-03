@@ -16,7 +16,7 @@ const observer = (dom, cb) => {
   resizeObserver.observe(dom);
   const mutationObserver = new MutationObserver(() => cb(get(dom)));
   mutationObserver.observe(dom, { attributes: true, childList: false, characterData: false });
-  dom.__disconnect = () => {
+  return () => {
     resizeObserver.disconnect();
     mutationObserver.disconnect();
   };

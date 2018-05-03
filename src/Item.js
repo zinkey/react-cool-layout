@@ -8,7 +8,7 @@ class ReactCoolLayoutItem extends Component {
     context.env.init(this);
   }
   componentWillUnmount() {
-    context.env.dispose(this);
+    this.context.env.dispose(this);
   }
   render() {
     const style = Object.assign({}, this.props.style, {
