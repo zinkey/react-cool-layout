@@ -14,12 +14,11 @@ const setStyle = (dom, type, val) => {
 };
 
 class ReactCoolLayout extends Component {
-
   constructor(props) {
     super(props);
     this.map = new Map()
-    this.pageList = []
   }
+
   getChildContext() {
     return {
       env: {
@@ -29,10 +28,9 @@ class ReactCoolLayout extends Component {
     };
   }
 
-
-
   init(instance) {
     this.map.set(instance, {
+      // all the components that could affect the current instance
       effectComponent: [],
       listenPage: {},
       listen: {},
@@ -56,6 +54,80 @@ class ReactCoolLayout extends Component {
   }
 
   componentDidMount() {
+    this.initializeLayoutItems();
+
+    this.map.list.forEach(({ key, value }) => {
+      for (const type in value.listenPage) {
+        value.dispose.push(resize(() => {
+          const val = value.listenPage[type]({
+            get: (targetId) => {
+              const target = this.map.list.find(item => item.key.props.id === targetId);
+              if (!target) {
+                return {
+                  width: 0,
+                  height: 0,
+                  left: 0,
+                  top: 0,
+                };
+              }
+              return target.value.cache;
+            },
+            page: () => {
+              return {
+                viewWidth: document.documentElement.clientWidth,
+                viewHeight: document.documentElement.clientHeight,
+                width: document.documentElement.scrollWidth,
+                height: document.documentElement.scrollHeight,
+              };
+            },
+          });
+          setStyle(key.dom, type, val);
+          this.props.onChange();
+        }));
+      }
+
+      if (value.effectComponent.length > 0) {
+        value.dispose.push(observer(key.dom, (obj) => {
+          value.cache = obj;
+          value.effectComponent.forEach((item) => {
+            const listen = this.map.get(item).listen;
+            for (const type in listen) {
+              const value = listen[type]({
+                get: (targetId) => {
+                  const target = this.map.list.find(item => item.key.props.id === targetId);
+                  if (!target) {
+                    return {
+                      width: 0,
+                      height: 0,
+                      left: 0,
+                      top: 0,
+                    };
+                  }
+                  return target.value.cache;
+                },
+                page: () => {
+                  return {
+                    viewWidth: document.documentElement.clientWidth,
+                    viewHeight: document.documentElement.clientHeight,
+                    width: document.documentElement.scrollWidth,
+                    height: document.documentElement.scrollHeight,
+                  };
+                },
+              });
+              setStyle(item.dom, type, value);
+              this.props.onChange();
+            }
+          });
+        }));
+      }
+    });
+  }
+
+  componentDidUpdate() {
+    this.initializeLayoutItems();
+  }
+
+  initializeLayoutItems() {
     this.map.list.forEach(({ key, value }) => {
       const { defaultLeft, defaultTop, defaultWidth, defaultHeight } = key.props;
       ['width', 'height', 'left', 'top'].forEach((type) => {
@@ -94,73 +166,6 @@ class ReactCoolLayout extends Component {
           this.props.onChange();
         }
       });
-    });
-
-    this.map.list.forEach(({ key, value }) => {
-      for (const type in value.listenPage) {
-        value.dispose.push(resize(() => {
-          const val = value.listenPage[type]({
-            get: (targetId) => {
-              const target = this.map.list.find(item => item.key.props.id === targetId);
-              if (!target) {
-                return {
-                  width: 0,
-                  height: 0,
-                  left: 0,
-                  top: 0,
-                };
-              }
-              return target.value.cache;
-            },
-            page: () => {
-              return {
-                viewWidth: document.documentElement.clientWidth,
-                viewHeight: document.documentElement.clientHeight,
-                width: document.documentElement.scrollWidth,
-                height: document.documentElement.scrollHeight,
-              };
-            },
-          });
-          setStyle(key.dom, type, val);
-          this.props.onChange();
-        }));
-      }
-
-
-      if (value.effectComponent.length > 0) {
-        value.dispose.push(observer(key.dom, (obj) => {
-          value.cache = obj;
-          value.effectComponent.forEach((item) => {
-            const listen = this.map.get(item).listen;
-            for (const type in listen) {
-              const value = listen[type]({
-                get: (targetId) => {
-                  const target = this.map.list.find(item => item.key.props.id === targetId);
-                  if (!target) {
-                    return {
-                      width: 0,
-                      height: 0,
-                      left: 0,
-                      top: 0,
-                    };
-                  }
-                  return target.value.cache;
-                },
-                page: () => {
-                  return {
-                    viewWidth: document.documentElement.clientWidth,
-                    viewHeight: document.documentElement.clientHeight,
-                    width: document.documentElement.scrollWidth,
-                    height: document.documentElement.scrollHeight,
-                  };
-                },
-              });
-              setStyle(item.dom, type, value);
-              this.props.onChange();
-            }
-          });
-        }));
-      }
     });
   }
 
