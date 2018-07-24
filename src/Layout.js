@@ -55,6 +55,73 @@ class ReactCoolLayout extends Component {
 
   componentDidMount() {
     this.initializeLayoutItems();
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.list !== nextProps.list;
+  }
+
+  componentDidUpdate() {
+    this.disposeAll();
+    this.initializeLayoutItems();
+  }
+
+  disposeAll() {
+    this.map.list.forEach(({ key, value }) => {
+      value.dispose.forEach(dispose => dispose());
+    });
+  }
+
+  initializeLayoutItems() {
+    this.map.list.forEach(({ key, value }) => {
+      ['width', 'height', 'left', 'top'].forEach((type) => {
+        if (typeof key.props[type] !== 'undefined') {
+          if (typeof key.props[type] === 'function') {
+            const val = key.props[type]({
+              get: (targetId) => {
+                const target = this.map.list.find(item => item.key.props.id === targetId);
+                if (target && target.value.effectComponent.indexOf(key) < 0) {
+                  target.value.effectComponent.push(key);
+                }
+
+                if (target) {
+                  const { defaultLeft, defaultTop, defaultWidth, defaultHeight } = target.key.props;
+                  return {
+                    width: defaultWidth,
+                    height: defaultHeight,
+                    left: defaultLeft,
+                    top: defaultTop,
+                  };
+                }
+
+                return {
+                  width: 0,
+                  height: 0,
+                  left: 0,
+                  top: 0,
+                };
+              },
+              page: () => {
+                if (!value.listenPage[type]) {
+                  value.listenPage[type] = key.props[type];
+                }
+                return {
+                  viewWidth: document.documentElement.clientWidth,
+                  viewHeight: document.documentElement.clientHeight,
+                  width: document.documentElement.scrollWidth,
+                  height: document.documentElement.scrollHeight,
+                };
+              },
+            });
+            value.listen[type] = key.props[type];
+            setStyle(key.dom, type, val);
+          } else {
+            setStyle(key.dom, type, parseFloat(key.props[type]));
+          }
+          this.props.onChange();
+        }
+      });
+    });
 
     this.map.list.forEach(({ key, value }) => {
       for (const type in value.listenPage) {
@@ -120,62 +187,6 @@ class ReactCoolLayout extends Component {
           });
         }));
       }
-    });
-  }
-
-  componentDidUpdate() {
-    this.initializeLayoutItems();
-  }
-
-  initializeLayoutItems() {
-    this.map.list.forEach(({ key, value }) => {
-      ['width', 'height', 'left', 'top'].forEach((type) => {
-        if (typeof key.props[type] !== 'undefined') {
-          if (typeof key.props[type] === 'function') {
-            const val = key.props[type]({
-              get: (targetId) => {
-                const target = this.map.list.find(item => item.key.props.id === targetId);
-                if (target && target.value.effectComponent.indexOf(key) < 0) {
-                  target.value.effectComponent.push(key);
-                }
-
-                if (target) {
-                  const { defaultLeft, defaultTop, defaultWidth, defaultHeight } = target.key.props;
-                  return {
-                    width: defaultWidth,
-                    height: defaultHeight,
-                    left: defaultLeft,
-                    top: defaultTop,
-                  };
-                }
-
-                return {
-                  width: 0,
-                  height: 0,
-                  left: 0,
-                  top: 0,
-                };
-              },
-              page: () => {
-                if (!value.listenPage[type]) {
-                  value.listenPage[type] = key.props[type];
-                }
-                return {
-                  viewWidth: document.documentElement.clientWidth,
-                  viewHeight: document.documentElement.clientHeight,
-                  width: document.documentElement.scrollWidth,
-                  height: document.documentElement.scrollHeight,
-                };
-              },
-            });
-            value.listen[type] = key.props[type];
-            setStyle(key.dom, type, val);
-          } else {
-            setStyle(key.dom, type, parseFloat(key.props[type]));
-          }
-          this.props.onChange();
-        }
-      });
     });
   }
 
