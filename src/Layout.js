@@ -67,11 +67,22 @@ class ReactCoolLayout extends Component {
                 if (target && target.value.effectComponent.indexOf(key) < 0) {
                   target.value.effectComponent.push(key);
                 }
+
+                if (target) {
+                  const { defaultLeft, defaultTop, defaultWidth, defaultHeight } = target.key.props;
+                  return {
+                    width: defaultWidth,
+                    height: defaultHeight,
+                    left: defaultLeft,
+                    top: defaultTop,
+                  };
+                }
+
                 return {
-                  width: defaultWidth || 0,
-                  height: defaultHeight || 0,
-                  left: defaultLeft || 0,
-                  top: defaultTop || 0,
+                  width: 0,
+                  height: 0,
+                  left: 0,
+                  top: 0,
                 };
               },
               page: () => {
