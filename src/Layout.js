@@ -5,7 +5,13 @@ import observer from './util/observer';
 import resize from './util/resize';
 
 const setStyle = (dom, type, val) => {
-  const px = `${val}px`;
+  let px;
+  if (typeof val === 'string' && val.indexOf('%') > 0) {
+    // percentage type
+    px = val;
+  } else {
+    px = `${parseFloat(val)}px`;
+  }
   if (dom.style[`__${type}`] === px) {
     return;
   }
@@ -100,7 +106,7 @@ class ReactCoolLayout extends Component {
             value.listen[type] = key.props[type];
             setStyle(key.dom, type, val);
           } else {
-            setStyle(key.dom, type, parseFloat(key.props[type]));
+            setStyle(key.dom, type, key.props[type]);
           }
           this.props.onChange();
         }
