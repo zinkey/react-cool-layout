@@ -12,7 +12,7 @@ class ReactCoolLayoutItem extends Component {
   }
   render() {
     const style = Object.assign({}, this.props.style, {
-      position: 'absolute',
+      position: this.props.position || 'absolute',
     });
     return (<div
       style={style}
