@@ -5,7 +5,7 @@ class ReactCoolLayoutItem extends Component {
 
   constructor(props, context) {
     super(props);
-    context.env.init(this);
+    context.env.init(this, props.onItemLayoutSet);
   }
   componentWillUnmount() {
     this.context.env.dispose(this);
