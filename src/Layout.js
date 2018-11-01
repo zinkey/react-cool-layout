@@ -37,7 +37,7 @@ class ReactCoolLayout extends Component {
 
 
 
-  init(instance) {
+  init(instance, onItemLayoutSet) {
     this.map.set(instance, {
       effectComponent: [],
       listenPage: {},
@@ -48,6 +48,7 @@ class ReactCoolLayout extends Component {
         left: 0,
         top: 0,
       },
+      onItemLayoutSet,
       dispose: [],
     });
   }
@@ -59,6 +60,14 @@ class ReactCoolLayout extends Component {
     }
     value.dispose.forEach(dispose => dispose());
     this.map.delete(instance);
+  }
+
+  setItemLayout = (instance, type, value) => {
+    const instanceValue = this.map.get(instance);
+    setStyle(instance.dom, type, value);
+    if (typeof instanceValue.onItemLayoutSet === 'function') {
+      instanceValue.onItemLayoutSet(type, value);
+    }
   }
 
   componentDidMount() {
@@ -104,9 +113,9 @@ class ReactCoolLayout extends Component {
               },
             });
             value.listen[type] = key.props[type];
-            setStyle(key.dom, type, val);
+            this.setItemLayout(key, type, val);
           } else {
-            setStyle(key.dom, type, key.props[type]);
+            this.setItemLayout(key, type, key.props[type]);
           }
           this.props.onChange();
         }
@@ -138,7 +147,7 @@ class ReactCoolLayout extends Component {
               };
             },
           });
-          setStyle(key.dom, type, val);
+          this.setItemLayout(key, type, val);
           this.props.onChange();
         }));
       }
@@ -172,7 +181,7 @@ class ReactCoolLayout extends Component {
                   };
                 },
               });
-              setStyle(item.dom, type, value);
+              this.setItemLayout(item, type, value);
               this.props.onChange();
             }
           });
